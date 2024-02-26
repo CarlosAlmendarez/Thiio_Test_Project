@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 class ApiController extends Controller
 {
@@ -98,4 +99,36 @@ class ApiController extends Controller
             "message" => "User logged out successfully"
         ]);
     }
+
+    // User Login (POST, formdata)
+    public function update(Request $request){
+
+        // Get current user
+        $userId = Auth::id();
+        $user = User::findOrFail($userId);
+
+        // Validate the data submitted by user
+        $request->validate([
+            "name" => "required",
+            "email" => "required|email|unique:users",
+            "password" => "required|confirmed"
+        ]);
+
+        // Fill user model
+        $user->fill([
+            "name" => $request->name,
+            "email" => $request->email,
+            "password" => $request->password
+        ]);
+
+        // Save user to database
+        $user->save();
+
+
+        return response()->json([
+            "status" => true,
+            "message" => "User updated successfully"
+        ]);
+    }
+
 }
