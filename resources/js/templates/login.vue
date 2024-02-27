@@ -80,6 +80,7 @@
         axios.post('http://127.0.0.1:8000/api/login', data)
         .then(function (response) {
           console.log(response);
+          window.location.href = "http://127.0.0.1:8000/dashboard"
         })
         .catch(function (error) {
           console.log(error);
