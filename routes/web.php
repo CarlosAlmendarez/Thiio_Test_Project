@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,6 +21,4 @@ Route::get('/signup', function () {
     return view('signup');
 })->name("signup");
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name("dashboard");
+Route::get('/dashboard', [UserController::class, 'dashboard'])->name("dashboard")->middleware('jwt.verify');

@@ -80,7 +80,10 @@
         axios.post('http://127.0.0.1:8000/api/login', data)
         .then(function (response) {
           console.log(response);
-          window.location.href = "http://127.0.0.1:8000/dashboard"
+
+          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+          window.location.href = "http://127.0.0.1:8000/dashboard?token="+response.data.token
         })
         .catch(function (error) {
           console.log(error);
