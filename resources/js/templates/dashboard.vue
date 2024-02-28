@@ -20,7 +20,7 @@
       :items="users"
       item-value="name"
     >
-      <template v-slot:default="{ items, isExpanded, toggleExpand }">
+      <template v-slot:default="{ items, isExpanded, toggleExpand }" class="ma-2 pa-2 align-self-center">
         <v-row>
           <v-col
             v-for="item in items"
@@ -32,44 +32,71 @@
             <v-card>
               <v-card-title class="d-flex align-center">
                 <v-icon
-                  :color="item.raw.color"
-                  :icon="item.raw.icon"
                   start
                   size="18"
                 ></v-icon>
 
-                <h4>{{ item.raw.name }}</h4>
+                <h4>Name: {{ item.raw.name }}</h4>
               </v-card-title>
 
               <v-card-text>
-                {{ item.raw.description }}
+                Email: {{ item.raw.email }}
               </v-card-text>
 
               <div class="px-4">
-                <v-switch
-                  :model-value="isExpanded(item)"
-                  :label="`${isExpanded(item) ? 'Hide' : 'Show'} details`"
-                  density="compact"
-                  inset
-                  @click="() => toggleExpand(item)"
-                ></v-switch>
+                <v-form v-model="valid">
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        cols="12"
+                        md="4"
+                      >
+                        <v-text-field
+                          v-model="item.raw.name"
+                          :rules="nameRules"
+                          label="Name"
+                          required
+                          hide-details
+                        ></v-text-field>
+                        
+                      </v-col>
+
+                      <v-col
+                      >
+                        <v-text-field
+                          v-model="item.raw.email"
+                          :rules="emailRules"
+                          label="E-mail"
+                          hide-details
+                          required
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col
+                      >
+                        <v-text-field
+                          v-model="passwordModel"
+                          :rules="passwordRules"
+                          label="Password"
+                          hide-details
+                          required
+                        ></v-text-field>
+                      </v-col>
+                    <v-col>
+                        <v-text-field
+                          v-model="passwordModel"
+                          :rules="passwordRules"
+                          label="Confirm Password"
+                          hide-details
+                          required
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-form>
               </div>
 
-              <v-divider></v-divider>
-
-              <v-expand-transition>
-                <div v-if="isExpanded(item)">
-                  <v-list density="compact" :lines="false">
-                    <v-list-item :title="`🔥 Calories: ${item.raw.calories}`" active></v-list-item>
-                    <v-list-item :title="`🍔 Fat: ${item.raw.fat}`"></v-list-item>
-                    <v-list-item :title="`🍞 Carbs: ${item.raw.carbs}`"></v-list-item>
-                    <v-list-item :title="`🍗 Protein: ${item.raw.protein}`"></v-list-item>
-                    <v-list-item :title="`🧂 Sodium: ${item.raw.sodium}`"></v-list-item>
-                    <v-list-item :title="`🦴 Calcium: ${item.raw.calcium}`"></v-list-item>
-                    <v-list-item :title="`🧲 Iron: ${item.raw.iron}`"></v-list-item>
-                  </v-list>
-                </div>
-              </v-expand-transition>
             </v-card>
           </v-col>
         </v-row>
@@ -82,6 +109,7 @@
   export default {
     data: () => ({
       users: window.posts,
+      toggle: [],
     }),
     mounted() {
       console.log(window.posts);
