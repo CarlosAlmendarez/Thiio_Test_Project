@@ -30,25 +30,31 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12" md="4">
-                            <v-text-field :rules="nameRules" label="Name" required hide-details></v-text-field>
+                            <v-text-field v-model="new_name" :rules="nameRules" label="Name" required hide-details></v-text-field>
                           </v-col>
                           <v-col>
-                            <v-text-field :rules="emailRules" label="Email" hide-details required></v-text-field>
+                            <v-text-field v-model="new_email" :rules="emailRules" label="Email" hide-details required></v-text-field>
                           </v-col>
                         </v-row>
                         <v-row>
                           <v-col>
-                            <v-text-field :rules="passwordRules" label="Password" hide-details required></v-text-field>
+                            <v-text-field v-model="new_password" :rules="passwordRules" label="Password" hide-details required></v-text-field>
                           </v-col>
                           <v-col>
-                            <v-text-field :rules="passwordRules" label="Confirm Password" hide-details required></v-text-field>
+                            <v-text-field v-model="new_confirmpassword" :rules="passwordRules" label="Confirm Password" hide-details required></v-text-field>
                           </v-col>
                         </v-row>
                         <div>
                           <v-row>
+                            <v-col cols="12">
+                              <v-alert v-if="showAlert" type="success" dismissible>
+                                {{ alertMessage }}
+                              </v-alert>
+                            </v-col>
                             <v-col>
                               <div class="text-center">
                                 <v-btn
+                                 @click="createUser()"
                                   append-icon="mdi-account-plus"
                                 >
                                   Create New User
@@ -68,8 +74,8 @@
       </v-col>
       <v-col>
         <div class="text-center text-h2 ma-5 pa-2"> Update Users </div>
-        <v-data-iterator :items="users" item-value="name">
-          <template v-slot:default="{ items, toggleEnabled }">
+        <v-data-iterator :pagination.sync="pagination" :items-per-page="itemsPerPage" :items="users" item-value="name">
+          <template v-slot:default="{ items }">
             <v-row>
               <v-col v-for="item in items" :key="item.enabled" cols="12" sm="12" md="6">
                 <v-card>
@@ -82,22 +88,27 @@
                       <v-container>
                         <v-row>
                           <v-col cols="12" md="4">
-                            <v-text-field v-model="item.raw.name" :rules="nameRules" label="Name" required hide-details></v-text-field>
+                            <v-text-field v-model="item.raw.name" :namepreviousvalue="item.raw.name" :rules="nameRules" label="Name" required hide-details></v-text-field>
                           </v-col>
                           <v-col>
-                            <v-text-field v-model="item.raw.email" :rules="emailRules" label="Email" hide-details required></v-text-field>
+                            <v-text-field v-model="item.raw.email" :emailpreviousvalue="item.raw.email" :rules="emailRules" label="Email" hide-details required></v-text-field>
                           </v-col>
                         </v-row>
                         <v-row>
                           <v-col>
-                            <v-text-field :rules="passwordRules" label="Password" hide-details required></v-text-field>
-                          </v-col>
-                          <v-col>
-                            <v-text-field :rules="passwordRules" label="Confirm Password" hide-details required></v-text-field>
+                            <v-text-field v-model="item.raw.password" :rules="passwordRules" label="Password" hide-details required></v-text-field>
                           </v-col>
                         </v-row>
                         <div>
                           <v-row>
+                            <v-col cols="12">
+                              <v-alert v-if="item.raw.showAlert" type="success" dismissible>
+                                {{ item.raw.alertMessage }}
+                              </v-alert>
+                              <v-alert v-if="item.raw.showErrorAlert" type="error" dismissible>
+                                {{ item.raw.alertMessage }}
+                              </v-alert>
+                            </v-col>
                             <v-col>
                               <div class="text-center">
                                 <v-btn
@@ -140,11 +151,19 @@
 
 <script>
 export default {
-  data: () => ({
+  data() {
+  return {
     users: window.posts,
-    enabledUsers: {}, // Objeto para almacenar el estado de habilitación por usuario
-    valid: true, // Variable de validación
-    passwordModel: '', // Modelo de contraseña
+    enabledUsers: {},
+    valid: false,
+    new_name: '',
+    new_email: '',
+    new_password: '',
+    new_confirmpassword: '',
+    showAlert: false,
+    alertMessage: '',
+    itemsPerPage: -1,
+    pagination: false,
     nameRules: [
       (v) => !!v || 'Name is required',
       (v) => (v && v.length <= 10) || 'Name must be less than 10 characters',
@@ -157,11 +176,42 @@ export default {
       (v) => !!v || 'Password is required',
       (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
     ],
-  }),
+  };
+},
   methods: {
     updateUser(user) {
-      // Aquí puedes implementar la lógica para actualizar el usuario en tu backend
-      console.log('Actualizando usuario:', user);
+      let data = { id: user.raw.id, name: user.raw.name, email: user.raw.email, password: user.raw.password, password_confirmation: user.raw.password }
+      let params = new URLSearchParams(document.location.search);
+      let token = params.get("token");
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        axios.post('http://127.0.0.1:8000/api/update', data)
+        .then(function (response) {
+          user.raw.showAlert = true;
+          user.raw.alertMessage = response.data.message;
+          setTimeout(() => {
+            user.raw.showAlert = false;
+          }, 3000)
+
+        })
+        .catch(function (error) {
+          user.raw.showErrorAlert = true;
+          user.raw.alertMessage = error.response.data.message;
+          setTimeout(() => {
+            user.raw.showErrorAlert = false;
+          }, 3000)
+        });
+    },
+    createUser() {
+      let data = { name: this.new_name, email: this.new_email, password: this.new_password, password_confirmation: this.new_password }
+        axios.post('http://127.0.0.1:8000/api/register', data)
+        .then(function (response) {
+          console.log(response);
+          window.location.reload();
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
 };

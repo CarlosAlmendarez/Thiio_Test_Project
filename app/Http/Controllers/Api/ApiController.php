@@ -103,22 +103,27 @@ class ApiController extends Controller
     // User Login (POST, formdata)
     public function update(Request $request){
 
-        // Get current user
-        $userId = Auth::id();
-        $user = User::findOrFail($userId);
+        $user = User::findOrFail($request->id);
 
-        // Validate the data submitted by user
-        $request->validate([
-            "name" => "required",
-            "email" => "required|email|unique:users",
-            "password" => "required|confirmed"
-        ]);
+        if($request->email === null && $request->name === null && $request->password === null){
+            return response()->json(['message' => "User information can't be empty"], 400);
+        }
 
+        if($request->email && $request->email != $user->email){
+            $request->validate([
+                "email" => "required|email|unique:users"
+            ]);
+        }
+        if($request->password){
+            $request->validate([
+                "password" => "required|confirmed"
+            ]);
+        }
         // Fill user model
         $user->fill([
-            "name" => $request->name,
-            "email" => $request->email,
-            "password" => $request->password
+            "name" => ($request->name) ? ($request->name) : ($user->name),
+            "email" => ($request->email) ? ($request->email) : ($user->email),
+            "password" => ($request->password) ? ($request->password) : ($user->password)
         ]);
 
         // Save user to database
