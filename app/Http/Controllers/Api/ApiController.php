@@ -100,7 +100,18 @@ class ApiController extends Controller
         ]);
     }
 
-    // User Login (POST, formdata)
+    public function deleteUser(Request $request){
+        $user = User::findOrFail($request->id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->delete();
+    
+        return response()->json(['message' => 'User successfully deleted']);
+    }
+
     public function update(Request $request){
 
         $user = User::findOrFail($request->id);

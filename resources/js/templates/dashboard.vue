@@ -10,7 +10,9 @@
   
         <v-spacer></v-spacer>
   
-        <v-btn append-icon="mdi-logout">
+        <v-btn 
+        @click="logOut()"
+        append-icon="mdi-logout">
             Log Out
         </v-btn>
       </v-toolbar>
@@ -78,7 +80,7 @@
           <template v-slot:default="{ items }">
             <v-row>
               <v-col v-for="item in items" :key="item.enabled" cols="12" sm="12" md="6">
-                <v-card>
+                <v-card v-if="item.raw.showElement=true">
                   <v-card-title class="d-flex align-center">
                     <v-icon icon="mdi-account" start size="18"></v-icon>
                     <h4>Username: {{ item.raw.name }}</h4>
@@ -125,7 +127,7 @@
                             <v-col>
                               <div class="text-center">
                                 <v-btn
-                                  @click="updateUser(item)"
+                                  @click="deleteUser(item)"
                                   append-icon="mdi-trash-can"
                                 >
                                   Delete User
@@ -213,6 +215,40 @@ export default {
           console.log(error);
         });
     },
+    deleteUser(user){
+      let params = new URLSearchParams(document.location.search);
+      let token = params.get("token");
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      let data = { id: user.raw.id }
+        axios.post('http://127.0.0.1:8000/api/delete', data)
+        .then(function (response) {
+          user.raw.showAlert = true;
+          user.raw.alertMessage = response.data.message;
+          setTimeout(() => {
+            user.raw.showAlert = false;
+            window.location.reload();
+          }, 3000)
+        })
+        .catch(function (error) {
+          user.raw.showErrorAlert = true;
+          user.raw.alertMessage = error.response.data.message;
+          setTimeout(() => {
+            user.raw.showErrorAlert = false;
+          }, 3000)
+        });
+    },
+    logOut(){
+      let params = new URLSearchParams(document.location.search);
+      let token = params.get("token");
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        axios.get('http://127.0.0.1:8000/api/logout')
+        .then(function (response) {
+          window.location.href = "http://127.0.0.1:8000/"
+        })
+        .catch(function (error) {
+          
+        });
+    }
   },
 };
 </script>

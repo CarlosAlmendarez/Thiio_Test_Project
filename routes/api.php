@@ -29,4 +29,5 @@ Route::group([
     Route::get("refresh", [ApiController::class, "refreshToken"]);
     Route::post("update", [ApiController::class, "update"]);
     Route::get("logout", [ApiController::class, "logout"]);
+    Route::post("delete", [ApiController::class, "deleteUser"]);
 });
