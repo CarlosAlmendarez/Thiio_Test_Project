@@ -39,8 +39,13 @@ class ApiController extends Controller
                 "status" => true,
                 "message" => "User registered successfully",
                 "token" => $token
-        ]);
-    }
+            ],200);
+        }else{
+            return response()->json([
+                "status" => true,
+                "message" => "User can't be register",
+            ],302);
+        }
 }
 
     public function login(Request $request){
@@ -63,13 +68,13 @@ class ApiController extends Controller
                 "status" => true,
                 "message" => "User logged in succcessfully",
                 "token" => $token
-            ]);
+            ],200);
         }
 
         return response()->json([
             "status" => false,
             "message" => "Invalid details"
-        ]);
+        ],302);
     }
 
     // User Profile (GET)
@@ -81,7 +86,7 @@ class ApiController extends Controller
             "status" => true,
             "message" => "Profile data",
             "data" => $userdata
-        ]);
+        ],200);
     } 
 
     // To generate refresh token value
@@ -93,7 +98,7 @@ class ApiController extends Controller
             "status" => true,
             "message" => "New access token",
             "token" => $newToken
-        ]);
+        ],200);
     }
 
     // User Logout (GET)
@@ -104,7 +109,7 @@ class ApiController extends Controller
         return response()->json([
             "status" => true,
             "message" => "User logged out successfully"
-        ]);
+        ],200);
     }
 
     public function deleteUser(Request $request){
@@ -116,7 +121,7 @@ class ApiController extends Controller
 
         $user->delete();
     
-        return response()->json(['message' => 'User successfully deleted']);
+        return response()->json(['message' => 'User successfully deleted'],200);
     }
 
     public function update(Request $request){
@@ -151,7 +156,7 @@ class ApiController extends Controller
         return response()->json([
             "status" => true,
             "message" => "User updated successfully"
-        ]);
+        ],200);
     }
 
 }

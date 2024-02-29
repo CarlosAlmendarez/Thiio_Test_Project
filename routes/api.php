@@ -18,16 +18,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post("register", [ApiController::class, "register"]);
-Route::post("login", [ApiController::class, "login"]);
+Route::post("register", [ApiController::class, "register"])->name('api/register');
+Route::post("login", [ApiController::class, "login"])->name('api/login');
 
 Route::group([
     "middleware" => ["auth:api"]
 ], function(){
 
-    Route::get("profile", [ApiController::class, "profile"]);
-    Route::get("refresh", [ApiController::class, "refreshToken"]);
-    Route::post("update", [ApiController::class, "update"]);
-    Route::get("logout", [ApiController::class, "logout"]);
-    Route::post("delete", [ApiController::class, "deleteUser"]);
+    Route::get("profile", [ApiController::class, "profile"])->name('api/profile');
+    Route::get("refresh", [ApiController::class, "refreshToken"])->name('api/refresh');
+    Route::post("update", [ApiController::class, "update"])->name('api/update');
+    Route::get("logout", [ApiController::class, "logout"])->name('api/logout');
+    Route::post("delete", [ApiController::class, "deleteUser"])->name('api/delete');
 });
