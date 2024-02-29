@@ -28,14 +28,21 @@ class ApiController extends Controller
             "password" => Hash::make($request->password)
         ]);
 
-        // Response
-        return response()->json([
-            "status" => true,
-            "message" => "User registered successfully"
+        $token = JWTAuth::attempt([
+            "email" => $request->email,
+            "password" => $request->password
+        ]);
+
+        if(!empty($token)){
+
+            return response()->json([
+                "status" => true,
+                "message" => "User registered successfully",
+                "token" => $token
         ]);
     }
+}
 
-    // User Login (POST, formdata)
     public function login(Request $request){
         
         // data validation

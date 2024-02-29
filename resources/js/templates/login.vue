@@ -24,6 +24,7 @@
           placeholder="Email address"
           prepend-inner-icon="mdi-email-outline"
           variant="outlined"
+          :rules="emailRules"
         ></v-text-field>
   
         <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
@@ -40,6 +41,7 @@
           placeholder="Enter your password"
           prepend-inner-icon="mdi-lock-outline"
           variant="outlined"
+          :rules="passwordRules"
           @click:append-inner= "'visible = !visible'"
         ></v-text-field>
   
@@ -71,7 +73,15 @@
   export default {
     data: () => ({
       email: '',
-      password: ''
+      password: '',
+      emailRules: [
+        (v) => !!v || 'Email is required',
+        (v) => /.+@.+\..+/.test(v) || 'Email must be valid',
+      ],
+      passwordRules: [
+        (v) => !!v || 'Password is required',
+        (v) => (v && v.length >= 6) || 'Password must be at least 6 characters',
+      ],
     }),
     methods: {
       validate() {
