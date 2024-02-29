@@ -54,6 +54,15 @@ class UserApiTest extends TestCase
         Artisan::call('migrate');
 
         //verify good logout
+        $badLogout = $this->post(route('api/register'),["name"=>"exmple","email"=>"a@b.com","password"=>"123456789","password_confirmation"=>"123456789"]);
+        $badLogout = $this->post(route('api/login'),["email"=>"a@b.com","password"=>"123456789"]);
+        $badLogout->assertJsonStructure(['token']);
+        $token = $badLogout->json('token');
+        $badLogoutResponse = $this->get(route('api/logout'));
+        $badLogoutResponse->assertStatus(302);
+
+
+        //verify good logout
         $goodLogout = $this->post(route('api/register'),["name"=>"exmple","email"=>"a@b.com","password"=>"123456789","password_confirmation"=>"123456789"]);
         $goodLogout = $this->post(route('api/login'),["email"=>"a@b.com","password"=>"123456789"]);
         $goodLogout->assertJsonStructure(['token']);
@@ -65,6 +74,14 @@ class UserApiTest extends TestCase
     public function test_update(): void
     { 
         Artisan::call('migrate');
+
+        //verify bad update
+        $badUpdate = $this->post(route('api/register'),["name"=>"exmple","email"=>"a@b.com","password"=>"123456789","password_confirmation"=>"123456789"]);
+        $badUpdate = $this->post(route('api/login'),["email"=>"a@b.com","password"=>"123456789"]);
+        $badUpdate->assertJsonStructure(['token']);
+        $token = $badUpdate->json('token');
+        $badUpdateResponse = $this->withHeader('Authorization', 'Bearer ' . $token)->post(route('api/update'));
+        $badUpdateResponse->assertStatus(404);
 
         //verify good update
         $goodUpdate = $this->post(route('api/register'),["name"=>"exmple","email"=>"a@b.com","password"=>"123456789","password_confirmation"=>"123456789"]);
@@ -78,6 +95,14 @@ class UserApiTest extends TestCase
     public function test_delete(): void
     { 
         Artisan::call('migrate');
+
+        //verify bad delete
+        $badDelete = $this->post(route('api/register'),["name"=>"exmple","email"=>"a@b.com","password"=>"123456789","password_confirmation"=>"123456789"]);
+        $badDelete = $this->post(route('api/login'),["email"=>"a@b.com","password"=>"123456789"]);
+        $badDelete->assertJsonStructure(['token']);
+        $token = $badDelete->json('token');
+        $badDeleteResponse = $this->withHeader('Authorization', 'Bearer ' . $token)->post(route('api/delete'));
+        $badDeleteResponse->assertStatus(404);
 
         //verify good delete
         $goodDelete = $this->post(route('api/register'),["name"=>"exmple","email"=>"a@b.com","password"=>"123456789","password_confirmation"=>"123456789"]);
