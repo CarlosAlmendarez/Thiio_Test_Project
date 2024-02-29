@@ -1,26 +1,28 @@
-## Instrucciones de Configuración
+## Setup Instructions
 
-1. Clona este repositorio.
-2. Ejecuta `composer install` para instalar el proyecto de laravel.
-3. Ejecuta `npm install` para instalar node en el proyecto.
-4. crear el archivo .env en la raiz del proyecto copiando el contenido de .env.example.
-5. Ejecuta el comando `php artisan key:generate` para instalar la llave en el archivo .env.
-6. Ejecuta `npm run dev` para compilar los paquetes de node.
-7. En otra terminal ejecuta `php artisan serve` para correr el proyecto de manera local.
-8. abre la direccion de tu localhost:8000 para visualizar el proyecto.
+1. Clone this repository.
+2. Run `composer install` to install the Laravel project.
+3. Run `npm install` to install Node in the project.
+4. Create the .env file in the root of the project by copying the contents of .env.example.
+5. Run the command `php artisan key:generate` to install the key in the .env file.
+6. Run `npm run dev` to compile the node packages.
+7. In another terminal, run `php artisan serve` to run the project locally.
+8. Open your localhost:8000 address to view the project.
 
-## Configuración de la Base de Datos
+## Database configuration
 
-Este proyecto utiliza MySQL como base de datos. Asegúrate de tener MySQL instalado y luego configura las siguientes variables de entorno:
+This project uses MySQL as the database. Make sure you have MySQL installed and then configure the following environment variables:
 
-- `DB_HOST`: Host de la base de datos.
-- `DB_DATABASE`: Nombre de la base de datos.
-- `DB_USERNAME`: Nombre de usuario de la base de datos.
-- `DB_PASSWORD`: Contraseña de la base de datos.
+- `DB_CONNECTION`=mysql
+- `DB_HOST`=127.0.0.1
+- `DB_PORT`=3306
+- `DB_DATABASE`=laravel
+- `DB_USERNAME`=root
+- `DB_PASSWORD`=
 
-## Ejecución de Pruebas
+## Running test
 
-Para ejecutar las pruebas, utiliza el siguiente comando:
+To run the tests, use the following command:
 
 ```bash
 composer artisan test
